@@ -4,11 +4,15 @@
 # https://docs.scrapy.org/en/latest/topics/items.html
 
 from scrapy import Item, Field
+from itemloaders.processors import Compose, TakeFirst
 
-
-class Inmueble(Item):
-    title = Field()
-    covered_surface = Field()
-    rooms = Field()
-    bathrooms = Field()
-    estrato = Field()
+def parse_features(features_list):
+            return {temp.split(':')[0]: temp.split(':')[1] for temp in features_list}
+    
+class InmuebleItem(Item):
+    coords = Field()
+    comentarios = Field()
+    features = Field(
+        input_processor = Compose(parse_features),
+        output_processor = TakeFirst()
+        )

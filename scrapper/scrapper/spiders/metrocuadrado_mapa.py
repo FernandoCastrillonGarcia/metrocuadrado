@@ -1,7 +1,9 @@
 from scrapy.spiders import Spider
 import scrapy
 import json
-from ..items import Inmueble
+from ..items import InmuebleItem
+from itemloaders import ItemLoader
+
 
 base_url = "https://www.metrocuadrado.com"
 
@@ -9,7 +11,7 @@ atributes_xpath = "//div[contains(@class,'card-line')]/div[contains(@class,'d-no
 title_xpath = "//div[contains(@class,'d-none')]//h1/text()"
 
 
-class MetroCuadrado2Spider(Spider):
+class MetroCuadradoSpider(Spider):
     name = 'MetroCuadrado'
 
     start_urls = [base_url]
@@ -102,6 +104,7 @@ class MetroCuadrado2Spider(Spider):
 
     headers = {
         'authority': 'commons-api.metrocuadrado.com',
+        'user-agent': 'Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion',
         'accept': '*/*',
         'accept-language': 'es-419,es;q=0.9,en;q=0.8',
         'cache-control': 'no-cache',
@@ -132,28 +135,21 @@ class MetroCuadrado2Spider(Spider):
     def parse_api(self, response):
         raw_data = json.loads(response.body)
         data = raw_data['data']['result']['propertiesByFiltersQuery']['properties']
+        
+        loader = ItemLoader(item=InmuebleItem())
+        
         for result in data:
-            # link = base_url + result['url']
-            # yield scrapy.Request(link,
-            #                      callback = self.parse_link)
+            loader.add_value('coords', result['location'])
+            loader.add_value('comentarios', result['comments'])
+            loader.add_value('features', result['features'])
             
-            yield {
-                'coords': result['location'],
-                'commentarios': result['comments']
-            }
-    
-    def parse_link(self, response):
-        values = response.xpath(atributes_xpath)#.getall()
-        print('*'*60)
-        print(values)
-        title = response.xpath(title_xpath)
- 
-
-        # item = Inmueble()
-        # item['title'] = title
-        # item['covered_surface'] = values[0]
-        # item['rooms'] = values[2]
-        # item['bathrooms'] = values[3]
-        # item['estrato'] = values[4]
-
-        # yield item
+            item = loader.load_item()
+            yield item
+            
+            #yield item
+            
+            # yield {
+            #     'coords': result['location'],
+            #     'commentarios': result['comments'],
+            #     'features': parse_features(result['features'])
+            # }
