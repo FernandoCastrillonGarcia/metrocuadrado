@@ -138,18 +138,17 @@ class MetroCuadradoSpider(Spider):
         
         loader = ItemLoader(item=InmuebleItem())
         
-        for result in data:
-            loader.add_value('coords', result['location'])
-            loader.add_value('comentarios', result['comments'])
-            loader.add_value('features', result['features'])
+        item_keys = ['roomsNumber', 'adminPrice', 'price',
+                     'checked', 'id', 'area', 'forSale',
+                     'forRent', 'status', 'rentPrice',
+                     'coments', 'salePrice', 'metroId',
+                     'isPublished', 'url', 'stratum',
+                     'bathroomsNumber', 'builtArea', 'parkingNumber',
+                     'offerorType']
+        
+        for key in item_keys:
+            for result in data:
+                loader.add_value(key, result[key])
             
-            item = loader.load_item()
-            yield item
-            
-            #yield item
-            
-            # yield {
-            #     'coords': result['location'],
-            #     'commentarios': result['comments'],
-            #     'features': parse_features(result['features'])
-            # }
+        item = loader.load_item()
+        yield item
