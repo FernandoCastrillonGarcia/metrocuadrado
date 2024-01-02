@@ -141,10 +141,10 @@ class MetroCuadradoSpider(Spider):
         item_keys = ['roomsNumber', 'adminPrice', 'price',
                      'checked', 'id', 'area', 'forSale',
                      'forRent', 'status', 'rentPrice',
-                     'coments', 'salePrice', 'metroId',
+                     'salePrice', 'metroId', 'coments'
                      'isPublished', 'url', 'stratum',
                      'bathroomsNumber', 'builtArea', 'parkingNumber',
-                     'offerorType']
+                     'offerorType', 'comentsisPublished']
         
         for key in item_keys:
             for result in data:
