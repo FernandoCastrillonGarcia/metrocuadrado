@@ -4,14 +4,14 @@
 # https://docs.scrapy.org/en/latest/topics/items.html
 
 from scrapy import Item, Field
-from itemloaders.processors import Compose, TakeFirst
+from itemloaders.processors import Compose, TakeFirst, Join
 
 def parse_features(features_list):
     return {temp.split(':')[0]: temp.split(':')[1] for temp in features_list}
     
 class InmuebleItem(Item):
-    roomsNumber = Field()
     adminPrice = Field()
+    roomsNumber = Field()
     price = Field()
     checked = Field()
     id = Field()
