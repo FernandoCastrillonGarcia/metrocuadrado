@@ -122,6 +122,14 @@ class MetroCuadradoSpider(Spider):
         'x-audit-client-id': ''
     }
 
+    item_keys = ['roomsNumber', 'adminPrice', 'price',
+                     'checked', 'id', 'area', 'forSale',
+                     'forRent', 'status', 'rentPrice',
+                     'salePrice', 'metroId', 'coments',
+                     'isPublished', 'url', 'stratum',
+                     'bathroomsNumber', 'builtArea', 'parkingNumber',
+                     'offerorType']
+
     def parse(self, response):
 
         url = "https://commons-api.metrocuadrado.com/v1/api/commons/queries"
@@ -138,17 +146,13 @@ class MetroCuadradoSpider(Spider):
         
         loader = ItemLoader(item=InmuebleItem())
         
-        item_keys = ['roomsNumber', 'adminPrice', 'price',
-                     'checked', 'id', 'area', 'forSale',
-                     'forRent', 'status', 'rentPrice',
-                     'salePrice', 'metroId', 'coments'
-                     'isPublished', 'url', 'stratum',
-                     'bathroomsNumber', 'builtArea', 'parkingNumber',
-                     'offerorType', 'comentsisPublished']
-        
-        for key in item_keys:
-            for result in data:
-                loader.add_value(key, result[key])
-            
+        for result in data:
+            for key in self.item_keys:
+                try:
+                    loader.add_value(key, result[key])
+                except:
+                    print('LLAVER QUE NO FUNCIONA: ',key)
+                    loader.add_value(key, '')
+
         item = loader.load_item()
         yield item

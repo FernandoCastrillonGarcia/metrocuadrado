@@ -20,7 +20,6 @@ class InmuebleItem(Item):
     forRent = Field()
     status = Field()
     rentPrice = Field()
-    comentsisPublished = Field()
     coments = Field()
     salePrice = Field()
     metroId = Field()

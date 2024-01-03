@@ -17,8 +17,6 @@ class InmueblePipeline:
     def create_table(self):
         self.cur.execute("""CREATE TABLE IF NOT EXISTS inmuebles(id TEXT PRIMARY KEY,roomsNumber TEXT,adminPrice TEXT,price TEXT,checked TEXT,area TEXT,forSale TEXT,forRent TEXT,status TEXT,rentPrice TEXT,comentsisPublished TEXT,coments TEXT,salePrice TEXT,metroId TEXT,isPublished TEXT,url TEXT,stratum TEXT,bathroomsNumber TEXT,builtArea TEXT,parkingNumber TEXT,offerorType TEXT)""")
     
-    
-    
     def process_item(self, item, spider):
         self.cur.execute("""
                          INSERT OR IGNORE INTO inmuebles VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
