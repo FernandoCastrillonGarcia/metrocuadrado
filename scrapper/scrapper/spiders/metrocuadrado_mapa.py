@@ -34,7 +34,8 @@ class MetroCuadradoSpider(Spider):
         'id',
         'forSale',
         'forRent',
-        'comments'
+        'comments',
+        'status'
     ]
 
     item_keys_number = [
@@ -47,8 +48,7 @@ class MetroCuadradoSpider(Spider):
         'price',
         'rentPrice',
         'salePrice',
-        'status',
-        'stratum',
+        'stratum'
     ]
     
     def get_lists(self):
@@ -61,17 +61,11 @@ class MetroCuadradoSpider(Spider):
         realEstate_pages = batch['realEstate']['pages']
         seller_pages = batch['seller']['pages']
 
-        # Get the maximum number of pagination
-        pages = max([len(realEstate_pages), len(seller_pages)])
-
-        return realEstate_pages, seller_pages, pages
+        return realEstate_pages, seller_pages
 
     def parse(self, response):
 
-        # Create Instance of the Loader Item
-        loader = ItemLoader(item=InmuebleItem())
-
-        realEstate_pages, seller_pages, max_pages = self.get_lists()
+        realEstate_pages, seller_pages = self.get_lists()
         
         for r, s in tqdm(zip(realEstate_pages, seller_pages)):
             
@@ -85,32 +79,28 @@ class MetroCuadradoSpider(Spider):
                                 method = 'POST',
                                 headers=self.headers,
                                 body=payload,
-                                callback = self.parse_api,
-                                cb_kwargs={'loader': loader, 'stop': max_pages})
+                                callback = self.parse_api)
             
-    def parse_api(self, response, **kwargs):
+    def parse_api(self, response):
         
-        # get response from parse method to pass it to the loader
-        loader = kwargs['loader']
         raw_data = json.loads(response.body)
         data = raw_data['data']['result']['propertiesByFiltersQuery']['properties']
 
         # Start the loader
-        item_keys = self.item_keys_string + self.item_keys_number
+        item_keys = self.item_keys_number + self.item_keys_string
         for result in data:
+            loader = ItemLoader(item=InmuebleItem())
             for key in item_keys:
                 loader.add_value(key, result[key])
                 # Default values for missing values
                 if result[key] is None:
-                    if key in self.item_keys_number:
-                        loader.add_value(key, -1)
-                    else:
+                    if key in self.item_keys_string:
                         loader.add_value(key, 'XD')
+                    else:
+                        loader.add_value(key, -1)
                            
             loader.add_value('lon', result['location']['lon'])
             loader.add_value('lat', result['location']['lat'])
             loader.add_value('propertyType', result['propertyType']['label'])
-        
-        self.conteo += 1
-        if self.conteo >= kwargs['stop']:
+
             yield loader.load_item()
