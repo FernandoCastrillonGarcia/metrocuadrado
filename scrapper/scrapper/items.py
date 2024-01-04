@@ -10,28 +10,29 @@ def parse_features(features_list):
     return {temp.split(':')[0]: temp.split(':')[1] for temp in features_list}
     
 class InmuebleItem(Item):
-    adminPrice = Field()
-    roomsNumber = Field()
-    price = Field()
-    checked = Field()
     id = Field()
+    builtArea = Field()
     area = Field()
+    
+    bathroomsNumber = Field()
+    roomsNumber = Field()
+    parkingNumber = Field()
+
+    adminPrice = Field()
+    price = Field()
+    rentPrice = Field()
+    salePrice = Field()
+
+
     forSale = Field()
     forRent = Field()
-    status = Field()
-    rentPrice = Field()
-    coments = Field()
-    salePrice = Field()
-    metroId = Field()
-    isPublished = Field()
-    url = Field()
-    stratum = Field()
-    bathroomsNumber = Field()
-    builtArea = Field()
-    parkingNumber = Field()
-    offerorType = Field()
     
-    # features = Field(
-    #     input_processor = Compose(parse_features),
-    #     output_processor = TakeFirst()
-    #     )
+
+    status = Field()
+    stratum = Field()
+    comments = Field()
+
+    lat = Field()
+    lon = Field()
+    propertyType = Field()
+
