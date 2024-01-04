@@ -1,0 +1,1 @@
+{"CONCURRENT_REQUESTS": 24, "MEMORY_LIMIT_MG": 2048, "MEMUSAGE_NOTIFY_MAIL": ["fernandocastrillon500@gmail.com"], "ROBOTSTXT_OBEY": true, "FEEDS": {"./results/metrocuadrado.json": {"format": "json", "encoding": "utf8", "store_empty": false, "fields": null, "indent": 4, "overwrite": true, "item_export_kwargs": {"export_empty_fields": true}}}}
