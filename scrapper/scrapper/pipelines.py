@@ -34,7 +34,9 @@ class InmueblePipeline:
             price REAL,
             rentPrice REAL,
             salePrice REAL,
-            stratum INTEGER
+            stratum INTEGER,
+            lat REAL,
+            lon REAL
         )
         """
         self.cur.execute(table_query)
@@ -44,7 +46,7 @@ class InmueblePipeline:
         return item
     
     def store_db(self, item):
-        query = """INSERT INTO inmuebles VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+        query = """INSERT INTO inmuebles VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
         values = (
             item['id'],
             item['forSale'],
@@ -61,7 +63,9 @@ class InmueblePipeline:
             item['price'],
             item['rentPrice'],
             item['salePrice'],
-            item['stratum']
+            item['stratum'],
+            item['lat'],
+            item['lon']
         )
         self.cur.execute(query, values)
         self.con.commit()
