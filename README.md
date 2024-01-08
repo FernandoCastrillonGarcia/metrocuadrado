@@ -6,7 +6,7 @@ Antes de correr el código, es necesario tener instalado
 
 ## HTML Output
 
-[![HTML Output](MapPage/assets/img/Bogota.jpg)
+![HTML Output](MapPage/assets/img/Bogota.jpg)
 
 Para clonar el projecto, utilizas la siguiente línea de comando: 
 
