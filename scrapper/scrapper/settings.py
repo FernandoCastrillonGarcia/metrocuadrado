@@ -63,7 +63,9 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   "scrapper.pipelines.InmueblePipeline": 300,
+   "scrapper.pipelines.DuplicatesPipeline": 300,
+   "scrapper.pipelines.ForRentPipeline": 400,
+   "scrapper.pipelines.StorePipeline": 500,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -93,4 +95,4 @@ TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
 
 LOG_LEVEL = 'INFO'
-LOG_LEVEL_ITEM = 'DEBUG'
+#LOG_LEVEL_ITEM = 'DEBUG'

@@ -95,7 +95,7 @@ custom_settings = {
     #     },
     # }
     'FEEDS': {
-        './results/metrocuadrado.json': {
+        '../metrocuadrado.json': {
             'format': 'json',
             'encoding': 'utf8',
             'store_empty': False,
@@ -108,17 +108,3 @@ custom_settings = {
         },
     },
 }
-
-with open('scrapper/dicts/payload.json', 'w') as json_file:
-    json.dump(payload, json_file)
-
-with open('scrapper/dicts/custom_settings.json', 'w') as json_file:
-    json.dump(custom_settings, json_file)
-
-with open('scrapper/dicts/headers.json', 'w') as json_file:
-    json.dump(headers, json_file)
-
-with open('results/metrocuadrado.json', 'r') as json_file:
-    XD = json.load(json_file)
-
-print(len(XD))

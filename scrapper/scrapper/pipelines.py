@@ -6,34 +6,33 @@
 
 # useful for handling different item types with a single interface
 import sqlite3
+from . import local_settings
+from itemadapter import ItemAdapter
+from scrapy.exceptions import DropItem
 
-class InmueblePipeline:
+class StorePipeline(object):
     def __init__(self):
         self.create_connection()
         self.create_table()
 
     def create_connection(self):
-        self.con = sqlite3.connect('results/database.db')
+        self.con = sqlite3.connect('database.db')
         self.cur = self.con.cursor()
     
     def create_table(self):
         table_query = """
         CREATE TABLE IF NOT EXISTS inmuebles (
             id TEXT,
-            forSale TEXT,
-            forRent TEXT,
+            rentType TEXT,
             comments TEXT,
-            status TEXT,
+            url TEXT,
             propertyType TEXT,
             builtArea REAL,
             area REAL,
             bathroomsNumber INTEGER,
             roomsNumber INTEGER,
             parkingNumber INTEGER,
-            adminPrice REAL,
             price REAL,
-            rentPrice REAL,
-            salePrice REAL,
             stratum INTEGER,
             lat REAL,
             lon REAL
@@ -41,31 +40,56 @@ class InmueblePipeline:
         """
         self.cur.execute(table_query)
     
-    def process_item(self, item, spider):
-        self.store_db(item)
-        return item
-    
     def store_db(self, item):
-        query = """INSERT INTO inmuebles VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+        query = """
+        INSERT INTO inmuebles VALUES 
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
         values = (
             item['id'],
-            item['forSale'],
-            item['forRent'],
+            item['rentType'],
             item['comments'],
-            item['status'],
+            item['url'],
             item['propertyType'],
             item['builtArea'],
             item['area'],
             item['bathroomsNumber'],
             item['roomsNumber'],
             item['parkingNumber'],
-            item['adminPrice'],
             item['price'],
-            item['rentPrice'],
-            item['salePrice'],
             item['stratum'],
             item['lat'],
             item['lon']
         )
         self.cur.execute(query, values)
         self.con.commit()
+    
+    def process_item(self, item, spider):
+        self.store_db(item)
+        return item
+
+class DuplicatesPipeline:
+
+    def __init__(self):
+        self.ids_seen = set()
+
+    def process_item(self, item, spider):
+        adapter = ItemAdapter(item)
+        if adapter['id'] in self.ids_seen:
+            raise DropItem(f"Duplicate item found: {item!r}")
+        else:
+            self.ids_seen.add(adapter['id'])
+            return item
+
+class ForRentPipeline:
+    def process_item(self, item, spider):
+        adapter = ItemAdapter(item)
+        
+        if adapter['rentPrice'] == -1:
+            adapter['rentType'] = 'Venta'
+        else:
+            adapter['rentType'] = 'Arriendo'
+
+        del item['rentPrice']
+        del item['salePrice']
+
+        return item
