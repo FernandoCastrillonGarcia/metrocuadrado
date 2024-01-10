@@ -14,7 +14,7 @@ NEWSPIDER_MODULE = "scrapper.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = "scrapper (+http://www.yourdomain.com)"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -63,9 +63,10 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   "scrapper.pipelines.DuplicatesPipeline": 300,
-   "scrapper.pipelines.ForRentPipeline": 400,
-   "scrapper.pipelines.StorePipeline": 500,
+   "scrapper.pipelines.DuplicatesPipeline": 1,
+   #"scrapper.pipelines.SavingPipeline": 2,
+   "scrapper.pipelines.StorePropertyPipeline": 3,
+   "scrapper.pipelines.StoreOfferorPipeline": 4#,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

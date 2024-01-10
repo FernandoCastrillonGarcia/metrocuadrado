@@ -1,6 +1,24 @@
-import json
-
-payload = {
+CUSTOM_SETTINGS = {
+    'CONCURRENT_REQUESTS': 24, # HAGA 24 SCRIPTS AL TIEMPO
+    'MEMORY_LIMIT_MG': 2048, # Limite de memoria RAM
+    'MEMUSAGE_NOTIFY_MAIL': ['fernandocastrillon500@gmail.com'], # Notificación por correo
+    'ROBOTSTXT_OBEY': True,
+    'FEEDS': {
+        '../MapPage/assets/db/metrocuadrado.json': {
+            'format': 'json',
+            'encoding': 'utf8',
+            'store_empty': True,
+            'fields': None,
+            'indent': 4,
+            'overwrite': True,
+            'item_export_kwargs': {
+                'export_empty_fields': True,
+            },
+        },
+    },
+}
+XD = 'asdasd'
+PAYLOAD = {
     "queries": [
         {
         "types": [
@@ -63,7 +81,7 @@ payload = {
     ]
 }
 
-headers = {
+HEADERS = {
     'authority': 'commons-api.metrocuadrado.com',
     'user-agent': 'Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion',
     'accept': '*/*',
@@ -82,32 +100,3 @@ headers = {
     'x-api-key': '6JgwwXGxlC921DP4SB4ST6Jo6OO7rv3t4yXn5Y8y',
     'x-audit-client-id': ''
 }
-
-custom_settings = {
-    'CONCURRENT_REQUESTS': 24, # HAGA 24 SCRIPTS AL TIEMPO
-    'MEMORY_LIMIT_MG': 2048, # Limite de memoria RAM
-    'MEMUSAGE_NOTIFY_MAIL': ['fernandocastrillon500@gmail.com'], # Notificación por correo
-    'ROBOTSTXT_OBEY': True,
-    'FEEDS': {
-        '../MapPage/assets/db/metrocuadrado.json': {
-            'format': 'json',
-            'encoding': 'utf8',
-            'store_empty': False,
-            'fields': None,
-            'indent': 4,
-            'overwrite': True,
-            'item_export_kwargs': {
-                'export_empty_fields': False,
-            },
-        },
-    },
-}
-
-with open('scrapper/dicts/payload.json', 'w') as json_file:
-    json.dump(payload, json_file)
-
-with open('scrapper/dicts/custom_settings.json', 'w') as json_file:
-    json.dump(custom_settings, json_file)
-
-with open('scrapper/dicts/headers.json', 'w') as json_file:
-    json.dump(headers, json_file)

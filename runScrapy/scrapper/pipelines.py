@@ -8,8 +8,52 @@
 import sqlite3
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
+from .items import PropertyItem, OfferorItem
+import csv
+import dataclasses
+from dataclasses import dataclass
 
-class StorePipeline(object):
+class DuplicatesPipeline:
+    def __init__(self):
+        self.id_propertys_seen = set()
+        self.id_offerors_seen = set()
+
+    def process_item(self, item, spider):
+        if isinstance(item, PropertyItem):
+            adapter = ItemAdapter(item)
+            if adapter['id_property'] in self.id_propertys_seen:
+                raise DropItem(f"Duplicate item found: {item!r}")
+            else:
+                self.id_propertys_seen.add(adapter['id_property'])
+                return item
+        elif isinstance(item, OfferorItem):
+            adapter = ItemAdapter(item)
+            if adapter['id_offeror'] in self.id_offerors_seen:
+                raise DropItem(f"Duplicate item found: {item!r}")
+            else:
+                self.id_offerors_seen.add(adapter['id_offeror'])
+                return item
+
+class SavingPipeline(object):
+    def process_item(self, item, spider):
+        filename = None
+        if isinstance(item, OfferorItem):
+            item = dataclasses.asdict(item)
+            fields = list(item.keys())
+            filename = 'offeror.csv'
+            with open(filename, 'a', encoding='utf-8') as f:
+                writer = csv.DictWriter(f, fieldnames=fields, lineterminator="\n")
+                writer.writerow(item)
+        elif isinstance(item, PropertyItem):
+            item = dataclasses.asdict(item)
+            filename = 'propery.csv'
+            fields = list(item.keys())
+            with open(filename, 'a', encoding='utf-8') as f:
+                writer = csv.DictWriter(f, fieldnames=fields, lineterminator="\n")
+                writer.writerow(item)
+        return item
+
+class StoreOfferorPipeline(object):
     def __init__(self):
         self.create_connection()
         self.create_table()
@@ -20,9 +64,55 @@ class StorePipeline(object):
     
     def create_table(self):
         table_query = """
-        CREATE TABLE IF NOT EXISTS inmuebles (
-            id TEXT,
-            rentType TEXT,
+        CREATE TABLE IF NOT EXISTS Offerors (
+            id_offeror TEXT PRIMARY KEY,
+            url TEXT,
+            address TEXT,
+            name TEXT,
+            type TEXT,
+            offerorType TEXT
+        )
+        """
+        self.cur.execute(table_query)
+    
+    def store_db(self, item):
+        item = dataclasses.asdict(item)
+        query = """
+        INSERT INTO Offerors VALUES 
+        (?, ?, ?, ?, ?, ?)"""
+        values = (
+            item['id_offeror'],
+            item['url'],
+            item['address'],
+            item['name'],
+            item['type'],
+            item['offerorType']
+        )
+        self.cur.execute(query, values)
+        self.con.commit()
+    
+    def process_item(self, item, spider):
+        if isinstance(item, OfferorItem):
+            self.store_db(item)
+            return item
+        else:
+            return item
+
+class StorePropertyPipeline:
+    def __init__(self):
+        self.create_connection()
+        self.create_table()
+
+    def create_connection(self):
+        self.con = sqlite3.connect('../MapPage/assets/db/database.db')
+        self.cur = self.con.cursor()
+    
+    def create_table(self):
+        table_query = """
+        CREATE TABLE IF NOT EXISTS Properties (
+            id_property TEXT PRIMARY KEY,
+            id_offeror TEXT,
+            businessType TEXT,
             comments TEXT,
             url TEXT,
             propertyType TEXT,
@@ -40,12 +130,14 @@ class StorePipeline(object):
         self.cur.execute(table_query)
     
     def store_db(self, item):
+        item = dataclasses.asdict(item)
         query = """
-        INSERT INTO inmuebles VALUES 
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+        INSERT INTO Properties VALUES 
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
         values = (
-            item['id'],
-            item['rentType'],
+            item['id_property'],
+            item['id_offeror'],
+            item['businessType'],
             item['comments'],
             item['url'],
             item['propertyType'],
@@ -63,32 +155,8 @@ class StorePipeline(object):
         self.con.commit()
     
     def process_item(self, item, spider):
-        self.store_db(item)
-        return item
-
-class DuplicatesPipeline:
-
-    def __init__(self):
-        self.ids_seen = set()
-
-    def process_item(self, item, spider):
-        adapter = ItemAdapter(item)
-        if adapter['id'] in self.ids_seen:
-            raise DropItem(f"Duplicate item found: {item!r}")
-        else:
-            self.ids_seen.add(adapter['id'])
+        if isinstance(item, PropertyItem):
+            self.store_db(item)
             return item
-
-class ForRentPipeline:
-    def process_item(self, item, spider):
-        adapter = ItemAdapter(item)
-        
-        if adapter['rentPrice'] == -1:
-            adapter['rentType'] = 'Venta'
         else:
-            adapter['rentType'] = 'Arriendo'
-
-        del item['rentPrice']
-        del item['salePrice']
-
-        return item
+            return item
