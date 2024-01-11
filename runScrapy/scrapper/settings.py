@@ -64,7 +64,7 @@ ROBOTSTXT_OBEY = True
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    "scrapper.pipelines.DuplicatesPipeline": 1,
-   #"scrapper.pipelines.SavingPipeline": 2,
+   "scrapper.pipelines.CheckInTable": 2,
    "scrapper.pipelines.StorePropertyPipeline": 3,
    "scrapper.pipelines.StoreOfferorPipeline": 4#,
 }

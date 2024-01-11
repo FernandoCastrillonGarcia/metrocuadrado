@@ -9,9 +9,7 @@ import sqlite3
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
 from .items import PropertyItem, OfferorItem
-import csv
 import dataclasses
-from dataclasses import dataclass
 
 class DuplicatesPipeline:
     def __init__(self):
@@ -34,24 +32,24 @@ class DuplicatesPipeline:
                 self.id_offerors_seen.add(adapter['id_offeror'])
                 return item
 
-class SavingPipeline(object):
-    def process_item(self, item, spider):
-        filename = None
-        if isinstance(item, OfferorItem):
-            item = dataclasses.asdict(item)
-            fields = list(item.keys())
-            filename = 'offeror.csv'
-            with open(filename, 'a', encoding='utf-8') as f:
-                writer = csv.DictWriter(f, fieldnames=fields, lineterminator="\n")
-                writer.writerow(item)
-        elif isinstance(item, PropertyItem):
-            item = dataclasses.asdict(item)
-            filename = 'propery.csv'
-            fields = list(item.keys())
-            with open(filename, 'a', encoding='utf-8') as f:
-                writer = csv.DictWriter(f, fieldnames=fields, lineterminator="\n")
-                writer.writerow(item)
-        return item
+# class SavingPipeline(object):
+#     def process_item(self, item, spider):
+#         filename = None
+#         if isinstance(item, OfferorItem):
+#             item = dataclasses.asdict(item)
+#             fields = list(item.keys())
+#             filename = 'offeror.csv'
+#             with open(filename, 'a', encoding='utf-8') as f:
+#                 writer = csv.DictWriter(f, fieldnames=fields, lineterminator="\n")
+#                 writer.writerow(item)
+#         elif isinstance(item, PropertyItem):
+#             item = dataclasses.asdict(item)
+#             filename = 'propery.csv'
+#             fields = list(item.keys())
+#             with open(filename, 'a', encoding='utf-8') as f:
+#                 writer = csv.DictWriter(f, fieldnames=fields, lineterminator="\n")
+#                 writer.writerow(item)
+#         return item
 
 class StoreOfferorPipeline(object):
     def __init__(self):
@@ -159,4 +157,59 @@ class StorePropertyPipeline:
             self.store_db(item)
             return item
         else:
+            return item
+
+class CheckInTable:
+    def __init__(self):
+        self.create_connection()
+    
+    def create_connection(self):
+        self.con = sqlite3.connect('../MapPage/assets/db/database.db')
+        self.cur = self.con.cursor()
+    
+    def process_item(self, item, spider):
+        if isinstance(item, PropertyItem):
+            item = dataclasses.asdict(item)
+            values = (
+                item['id_property'],
+                item['id_offeror'],
+                item['businessType'],
+                item['comments'],
+                item['url'],
+                item['propertyType'],
+                item['builtArea'],
+                item['area'],
+                item['bathroomsNumber'],
+                item['roomsNumber'],
+                item['parkingNumber'],
+                item['price'],
+                item['stratum'],
+                item['lat'],
+                item['lon']
+            )
+            table = 'Properties'
+            
+        elif isinstance(item, OfferorItem):
+            item = dataclasses.asdict(item)
+            values = (
+                item['id_offeror'],
+                item['url'],
+                item['address'],
+                item['name'],
+                item['type'],
+                item['offerorType']
+            )
+            table = 'Offerors'
+
+        self.cur.execute(f"SELECT * FROM {table}")
+        existing_rows = set(self.cur.fetchall())
+
+        if values in existing_rows:
+            return item
+        else:
+            query_val = '('+', '.join(['?']*len(values))+')'
+            self.cur.execute(f"INSERT INTO {table} VALUES {query_val}", values)
+
+            # Commit the changes to the database
+            self.con.commit()
             return item

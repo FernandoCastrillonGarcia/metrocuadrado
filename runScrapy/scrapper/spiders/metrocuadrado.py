@@ -5,7 +5,7 @@ from ..items import PropertyItem, OfferorItem
 from ..itemloaders import OfferorLoader, PropertyLoader
 import requests
 from tqdm import tqdm
-from .save_dicts import CUSTOM_SETTINGS, HEADERS, PAYLOAD
+from .local_settings import CUSTOM_SETTINGS, HEADERS, PAYLOAD
 
 class MetroCuadradoSpider(Spider):
 
@@ -28,8 +28,8 @@ class MetroCuadradoSpider(Spider):
         response = requests.request("POST", self.url_api, headers=self.headers, data=json.dumps(self.payload))
         r_json = json.loads(response.text)
         batch = r_json['data']['result']['propertiesByFiltersQuery']['batch']
-        realEstate_pages = batch['realEstate']['pages']
-        seller_pages = batch['seller']['pages']
+        realEstate_pages = batch['realEstate']['pages'][:1]
+        seller_pages = batch['seller']['pages'][:1]
 
         return realEstate_pages, seller_pages
 
