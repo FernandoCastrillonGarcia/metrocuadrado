@@ -28,8 +28,8 @@ class MetroCuadradoSpider(Spider):
         response = requests.request("POST", self.url_api, headers=self.headers, data=json.dumps(self.payload))
         r_json = json.loads(response.text)
         batch = r_json['data']['result']['propertiesByFiltersQuery']['batch']
-        realEstate_pages = batch['realEstate']['pages'][:1]
-        seller_pages = batch['seller']['pages'][:1]
+        realEstate_pages = batch['realEstate']['pages']
+        seller_pages = batch['seller']['pages']
 
         return realEstate_pages, seller_pages
 

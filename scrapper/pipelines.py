@@ -57,7 +57,7 @@ class StoreOfferorPipeline(object):
         self.create_table()
 
     def create_connection(self):
-        self.con = sqlite3.connect('../MapPage/assets/db/database.db')
+        self.con = sqlite3.connect('database.db')
         self.cur = self.con.cursor()
     
     def create_table(self):
@@ -102,7 +102,7 @@ class StorePropertyPipeline:
         self.create_table()
 
     def create_connection(self):
-        self.con = sqlite3.connect('../MapPage/assets/db/database.db')
+        self.con = sqlite3.connect('database.db')
         self.cur = self.con.cursor()
     
     def create_table(self):
@@ -164,7 +164,7 @@ class CheckInTable:
         self.create_connection()
     
     def create_connection(self):
-        self.con = sqlite3.connect('../MapPage/assets/db/database.db')
+        self.con = sqlite3.connect('database.db')
         self.cur = self.con.cursor()
     
     def process_item(self, item, spider):
