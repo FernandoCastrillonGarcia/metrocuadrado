@@ -12,7 +12,7 @@ def process_text(text):
     data = {'Input Text': [text], 'Processed Result': ['Result of processing']}
     return pd.DataFrame(data)
 
-
+df = pd.read_pickle('data/geoProperties.pkl')
 # Streamlit application layout
 st.title('ML Text Processing Application')
 
@@ -27,5 +27,5 @@ if st.button('Process'):
 
     # Display Folium map
     st.subheader('Folium Map')
-    st_folium_map = create_map()
+    st_folium_map = create_map(df)
     folium_static(st_folium_map)
