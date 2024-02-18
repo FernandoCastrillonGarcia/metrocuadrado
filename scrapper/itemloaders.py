@@ -1,19 +1,12 @@
 from itemloaders import ItemLoader
-from itemloaders.processors import TakeFirst, MapCompose
-
-def ChangeNone(x):
-    if x is None:
-        return 'xd'
-    else:
-        return x
+from itemloaders.processors import TakeFirst, Compose
 
 class PropertyLoader(ItemLoader):
     default_output_processor = TakeFirst()
-    default_input_processor = MapCompose(ChangeNone)
-    businessType_in = MapCompose(lambda x: x.capitalize())
-    url_in = MapCompose(lambda x: 'https://www.metrocuadrado.com'+ x, ChangeNone)
-    comments_in = MapCompose(lambda x: x.replace('\n',''), ChangeNone)
+    default_input_processor = Compose()
+    businessType_in = Compose(lambda x: x.capitalize())
+    url_in = Compose(lambda x: 'https://www.metrocuadrado.com'+ x)
+    comments_in = Compose(lambda x: x.replace('\n',''))
 
 class OfferorLoader(ItemLoader):
     default_output_processor = TakeFirst()
-    default_input_processor = ChangeNone

@@ -4,8 +4,7 @@ import json
 from ..items import PropertyItem, OfferorItem
 from ..itemloaders import OfferorLoader, PropertyLoader
 import requests
-from tqdm import tqdm
-from .local_settings import CUSTOM_SETTINGS, HEADERS, PAYLOAD
+from .dicts import CUSTOM_SETTINGS, HEADERS, PAYLOAD
 
 class MetroCuadradoSpider(Spider):
 
@@ -37,7 +36,7 @@ class MetroCuadradoSpider(Spider):
 
         realEstate_pages, seller_pages = self.get_lists()
         
-        for r, s in tqdm(zip(realEstate_pages, seller_pages)):
+        for r, s in zip(realEstate_pages, seller_pages):
             
             # Modify Payload to change the request's response
             self.payload['queries'][0]['batch']['realEstate']['from'] = r
